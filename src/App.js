@@ -3,6 +3,7 @@ import { Route, Switch } from "react-router";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
 import AddContact from "./components/AddContact";
+import EditContact from "./components/EditContact";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 
@@ -19,7 +20,7 @@ const App = () => {
           <AddContact />
         </Route>
         <Route path="/edit/:id">
-          <h1>Edit Component</h1>
+          <EditContact />
         </Route>
       </Switch>
     </div>

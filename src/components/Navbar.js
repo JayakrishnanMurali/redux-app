@@ -15,12 +15,13 @@ const NavbarStyled = styled.nav`
   background: #343a40;
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   a {
     color: white;
     text-decoration: none;
     font-size: 2rem;
     font-weight: 500;
+    margin-left: 4rem;
   }
 `;
 

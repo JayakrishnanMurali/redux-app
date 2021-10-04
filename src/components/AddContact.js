@@ -1,22 +1,79 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 
 const AddContact = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [number, setNumber] = useState("");
+  const contacts = useSelector((state) => state);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const checkEmail = contacts.find(
+      (contact) => contact.email === email && email
+    );
+    const checkNumber = contacts.find(
+      (contact) => contact.number === parseInt(number) && parseInt(number)
+    );
+
+    if (!email || !number || !name) {
+      return toast.warning("Please fill in all fields");
+    }
+
+    if (checkEmail) {
+      return toast.error("Email already exist!!");
+    }
+    if (checkNumber) {
+      return toast.error("Mobile Number already exist!!");
+    }
+
+    const data = {
+      id: contacts[contacts.length - 1].id + 1,
+      name,
+      email,
+      number,
+    };
+
+    dispatch({ type: "ADD_CONTACT", payload: data });
+    toast.success("Contact added successfully!");
+    history.push("/");
+  };
   return (
     <AddContactStyled>
       <div className="row">
         <h1>Add Contact</h1>
         <div className="container">
-          <form>
+          <form onSubmit={handleSubmit}>
             <div>
-              <input type="text" placeholder="Name" />
+              <input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
             <div>
-              <input type="email" placeholder="Email" />
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div>
-              <input type="text" placeholder="Phone Number" />
+              <input
+                type="text"
+                placeholder="Phone Number"
+                value={number}
+                onChange={(e) => setNumber(e.target.value)}
+              />
             </div>
             <div>
               <button type="submit">Save Contact</button>
