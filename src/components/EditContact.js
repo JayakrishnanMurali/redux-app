@@ -1,31 +1,109 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 
 const EditContact = () => {
   const { id } = useParams();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [number, setNumber] = useState("");
+  const contacts = useSelector((state) => state);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const currentContact = contacts.find(
+    (contact) => contact.id === parseInt(id)
+  );
+
+  useEffect(() => {
+    if (currentContact) {
+      setName(currentContact.name);
+      setEmail(currentContact.email);
+      setNumber(currentContact.number);
+    }
+  }, [currentContact]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const checkEmail = contacts.find(
+      (contact) => contact.id !== parseInt(id) && contact.email === email
+    );
+    const checkNumber = contacts.find(
+      (contact) =>
+        contact.id !== parseInt(id) && contact.number === parseInt(number)
+    );
+
+    if (!email || !number || !name) {
+      return toast.warning("Please fill in all fields");
+    }
+
+    if (checkEmail) {
+      return toast.error("Email already exist!!");
+    }
+    if (checkNumber) {
+      return toast.error("Mobile Number already exist!!");
+    }
+
+    const data = {
+      id: parseInt(id),
+      name,
+      email,
+      number,
+    };
+
+    dispatch({ type: "UPDATE_CONTACT", payload: data });
+    toast.success("Contact updated successfully!");
+    history.push("/");
+  };
+
   return (
     <EditContactStyled>
-      <div className="row">
-        <h1>Edit Contact {id}</h1>
-        <div className="container">
-          <form>
-            <div>
-              <input type="text" placeholder="Name" />
-            </div>
-            <div>
-              <input type="email" placeholder="Email" />
-            </div>
-            <div>
-              <input type="text" placeholder="Phone Number" />
-            </div>
-            <div className="btn-group">
-              <button type="submit">Update Contact</button>
-              <Link to="/">Cancel</Link>
-            </div>
-          </form>
+      {currentContact ? (
+        <div className="row">
+          <h1>Edit Contact {id}</h1>
+          <div className="container">
+            <form onSubmit={handleSubmit}>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Phone Number"
+                  value={number}
+                  onChange={(e) => setNumber(e.target.value)}
+                />
+              </div>
+              <div className="btn-group">
+                <button type="submit">Update Contact</button>
+                <Link to="/">Cancel</Link>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          {alert("Invalid Contact")}
+          <h1>404 Page Not Found</h1>
+        </>
+      )}
     </EditContactStyled>
   );
 };
